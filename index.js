@@ -19,9 +19,20 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+// Middleware to capture the client's IP address
+app.use((req, res, next) => {
+  // Capture the IP address from headers or connection information
+  req.ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  next();
+});
+
 // your first API endpoint...
-app.get('/api/hello', function (req, res) {
-  res.json({ greeting: 'hello API' });
+app.get('/api/whoami', function (req, res) {
+  res.json({
+    ipaddress: req.headers["x-forwarded-for"],
+    language : req.headers["accept-language"],
+    software : req.headers["user-agent"]
+  });
 });
 
 // listen for requests :)
